@@ -38,6 +38,7 @@ class Pet(SQLModel, table=True):
     is_spayed_neutered: bool = Field(default=False)
     weight_kg: float | None = None
     date_of_birth: datetime
+    sex: str = Field(sa_type=String)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 

@@ -1,3 +1,4 @@
+from pprint import pprint
 import pytest
 
 from sqlmodel import SQLModel, create_engine, Session
@@ -85,5 +86,25 @@ def test_get_one_user_by_email(session):
     result = service.get_user_by_email("mockmail@gmail.com")
     assert result is not None
     assert result.email == "mockmail@gmail.com"
+    assert result.id == 1
+    assert result.role == "customer"
+
+def test_login_user(session):
+    service = UserService(session)
+    mock_data = [
+        InsertUser(
+            email="mockmail@gmail.com",
+            password_hash=hash_password("mockpass123"),
+        ),
+        InsertUser(
+            email="mockmail2@gmail.com",
+            password_hash=hash_password("mockpass123"),
+        )
+    ]
+    for task in mock_data:
+        service.register_user(task)
+    result = service.login_user(InsertUser(email="mockmail@gmail.com", password_hash="mockpass123"))
+    pprint(result)
+    assert result is not None
     assert result.id == 1
     assert result.role == "customer"

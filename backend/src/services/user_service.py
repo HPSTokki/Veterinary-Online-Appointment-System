@@ -31,3 +31,22 @@ class UserService():
         if not user:
             return None
         return cast(ReadUser, user)
+    
+    def login_user(self, login_data: InsertUser) -> ReadUser | None:
+        stmt = select(UserAccount).where(
+            col(UserAccount.email) == login_data.email
+        )
+        
+        result = self.session.exec(stmt).first()
+        
+        if result is None:
+            return None
+        
+        is_pass_valid = verify_password(
+            login_data.password_hash, result.password_hash
+        )
+        
+        if not is_pass_valid:
+            return None
+        
+        return cast(ReadUser, result)

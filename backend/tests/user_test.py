@@ -1,4 +1,5 @@
 from pprint import pprint
+from unittest.mock import MagicMock
 import pytest
 
 from sqlmodel import SQLModel, create_engine, Session
@@ -103,8 +104,15 @@ def test_login_user(session):
     ]
     for task in mock_data:
         service.register_user(task)
-    result = service.login_user(InsertUser(email="mockmail@gmail.com", password_hash="mockpass123"))
+        
+    result = service.login_user(mock_form("mockmail@gmail.com", "mockpass123"))
     pprint(result)
     assert result is not None
-    assert result.id == 1
-    assert result.role == "customer"
+    assert "access_token" in result
+    assert result["token_type"] == "bearer"
+    
+def mock_form(username: str, password: str):
+    form = MagicMock()
+    form.username = username
+    form.password = password
+    return form

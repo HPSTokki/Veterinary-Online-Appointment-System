@@ -1,4 +1,4 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from typing import cast
 
 from backend.src.models.appointment_models import UserAccount, Client
@@ -16,6 +16,9 @@ class UserService():
         self.session.refresh(user)
         return cast(ReadUser, user)
     
-    def get_all_user(self) -> list[UserAccount]:
-        users = self.session.exec(select(UserAccount)).all()
-        return cast(list[UserAccount], users)
+    def get_all_user(self, email: str | None = None) -> list[ReadUser]:
+        stmt = select(UserAccount)
+        if email:
+            stmt = stmt.where(col(UserAccount.email).ilike(f"%{email}%"))
+        users = self.session.exec(stmt).all()
+        return cast(list[ReadUser], users)

@@ -16,9 +16,18 @@ class UserService():
         self.session.refresh(user)
         return cast(ReadUser, user)
     
-    def get_all_user(self, email: str | None = None) -> list[ReadUser]:
-        stmt = select(UserAccount)
-        if email:
-            stmt = stmt.where(col(UserAccount.email).ilike(f"%{email}%"))
-        users = self.session.exec(stmt).all()
+    def get_all_user(self) -> list[ReadUser]:
+        users = self.session.exec(select(UserAccount)).all()
         return cast(list[ReadUser], users)
+    
+    def get_user_by_id(self, user_id: int) -> ReadUser | None:
+        user = self.session.exec(select(UserAccount).where(UserAccount.id == user_id)).first()
+        if not user:
+            return None
+        return cast(ReadUser, user)
+    
+    def get_user_by_email(self, email: str) -> ReadUser | None:
+        user = self.session.exec(select(UserAccount).where(col(UserAccount.email).ilike(f"%{email}%"))).first()
+        if not user:
+            return None
+        return cast(ReadUser, user)

@@ -35,9 +35,10 @@ def test_register_user(session):
     expected_email = ["mockmail@gmail.com", "mockmail2@gmail.com"]
     expected_id = [1, 2]
     assert result != []
-    for id, task in enumerate(result):
-        assert task.email == expected_email[id]
-        assert task.id == expected_id[id]
+    for id, user in enumerate(result):
+        assert user.email == expected_email[id]
+        assert user.id == expected_id[id]
+        assert user.role == "customer"
         
 def test_get_all_user_none(session):
     """ 
@@ -47,7 +48,7 @@ def test_get_all_user_none(session):
     result = service.get_all_user()
     assert result == []
 
-def test_get_one_user(session):
+def test_get_one_user_by_id(session):
     service = UserService(session)
     mock_data = [
         InsertUser(
@@ -61,8 +62,28 @@ def test_get_one_user(session):
     ]
     for task in mock_data:
         service.register_user(task)
-    result = service.get_all_user(email="mockmail@gmail.com")
-    assert result != []
-    assert result[0].email == "mockmail@gmail.com"
-    assert result[0].id == 1
-    
+    result = service.get_user_by_id(1)
+    assert result is not None
+    assert result.email == "mockmail@gmail.com"
+    assert result.id == 1
+    assert result.role == "customer"
+
+def test_get_one_user_by_email(session):
+    service = UserService(session)
+    mock_data = [
+        InsertUser(
+            email="mockmail@gmail.com",
+            password_hash=hash_password("mockpass123"),
+        ),
+        InsertUser(
+            email="mockmail2@gmail.com",
+            password_hash=hash_password("mockpass123"),
+        )
+    ]
+    for task in mock_data:
+        service.register_user(task)
+    result = service.get_user_by_email("mockmail@gmail.com")
+    assert result is not None
+    assert result.email == "mockmail@gmail.com"
+    assert result.id == 1
+    assert result.role == "customer"

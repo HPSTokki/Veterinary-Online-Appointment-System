@@ -95,11 +95,11 @@ def test_login_user(session):
     mock_data = [
         InsertUser(
             email="mockmail@gmail.com",
-            password_hash=hash_password("mockpass123"),
+            password_hash="mockpass123",
         ),
         InsertUser(
             email="mockmail2@gmail.com",
-            password_hash=hash_password("mockpass123"),
+            password_hash="mockpass123",
         )
     ]
     for task in mock_data:

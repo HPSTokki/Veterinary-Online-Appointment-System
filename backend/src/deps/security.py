@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException, status
 
 
 pwd_context = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/auth/login")
 
 authDeps = Annotated[str, Depends(oauth2_scheme)]
 
@@ -33,7 +33,7 @@ def create_access_token(data: dict) -> str:
 
 def decode_access_token(token: str) -> dict:
     try:
-        jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,4 +46,3 @@ def decode_access_token(token: str) -> dict:
             detail="Invalid Token",
             headers={"WWW-Authenticate": "Bearer"}
         )
-    return cast(dict, token)

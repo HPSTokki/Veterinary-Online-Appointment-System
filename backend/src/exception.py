@@ -1,0 +1,22 @@
+from fastapi import HTTPException, status
+
+class DomainException(Exception):
+    def __init__(self, status_code: int, message: str, header: dict | None = None) -> None:
+        self.message = message
+        self.status_code = status_code
+        self.header = header
+    
+class LoginInvalidCredentials(DomainException):
+    def __init__(self, header: dict | None = None) -> None:
+        super().__init__(
+            status_code=status.HTTP_401_UNAUTHORIZED, 
+            message="Invalid Login Credentials",
+            header=header, 
+        )
+        
+class DuplicateAccountCredentials(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT, 
+            message="Account is already registered"
+        )

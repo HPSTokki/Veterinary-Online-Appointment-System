@@ -3,9 +3,10 @@ from sqlmodel import Session, select, col
 from typing import Annotated, cast
 from fastapi.security import OAuth2PasswordRequestForm
 
-from backend.src.models.appointment_models import UserAccount, Client
-from backend.src.dtos.user_dtos import InsertUser, ReadUser, ListReadUser, UpdateUser
-from backend.src.deps.security import create_access_token, hash_password, verify_password
+from src.models.appointment_models import UserAccount, Client
+from src.dtos.user_dtos import InsertUser, ReadUser, ListReadUser, UpdateUser
+from src.deps.security import create_access_token, hash_password, verify_password
+from src.exception import DuplicateAccountCredentials, LoginInvalidCredentials
 
 oauth2_form = Annotated[OAuth2PasswordRequestForm, Depends()]
 
@@ -14,7 +15,14 @@ class UserService():
         self.session = session
     
     def register_user(self, reg_data: InsertUser) -> ReadUser:
-        user = UserAccount(**reg_data.model_dump(exclude_unset=True))
+        stmt = select(UserAccount).where(col(UserAccount.email) == reg_data.email)
+        result = self.session.exec(stmt).first()
+        if result is not None:
+            raise DuplicateAccountCredentials()
+        user = UserAccount(
+            email=reg_data.email,
+            password_hash=hash_password(reg_data.password_hash)
+        )
         self.session.add(user)
         self.session.commit()
         self.session.refresh(user)
@@ -50,16 +58,14 @@ class UserService():
 #            return None
 #        return cast(ReadUser, result)
 
-    def login_user(self, form: oauth2_form):
+    def login_user(self, form: oauth2_form) -> dict:
         user = self.session.exec(
             select(UserAccount).where(col(UserAccount.email) == form.username)
         ).first()
+        print(form.password)
+        print(form.username)
         if not user or not verify_password(form.password, user.password_hash):
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
+            raise LoginInvalidCredentials()
         if not user.is_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

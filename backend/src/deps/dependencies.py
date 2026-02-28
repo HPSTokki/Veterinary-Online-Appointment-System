@@ -3,12 +3,19 @@ from typing import Annotated
 from fastapi import Depends, HTTPException, status
 from sqlmodel import select, Session
 
+from src.dtos.user_dtos import ReadUser
 from src.deps.security import authDeps, decode_access_token
 from src.deps.session import SessionDep
 from src.models.appointment_models import UserAccount
 
-def get_current_user(token: authDeps, session: SessionDep) -> UserAccount:
+def get_current_user(token: authDeps, session: SessionDep) -> ReadUser:
     payload = decode_access_token(token)
+    
+    if payload is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No Payload"
+        )
     
     user_id: int | None = payload.get("sub")
     if user_id is None:
@@ -28,6 +35,6 @@ def get_current_user(token: authDeps, session: SessionDep) -> UserAccount:
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Inactive Account",
         )
-    return user
+    return ReadUser.model_validate(user, from_attributes=True)
 
-CurrentUser = Annotated[UserAccount, Depends(get_current_user)]
+CurrentUser = Annotated[ReadUser, Depends(get_current_user)]

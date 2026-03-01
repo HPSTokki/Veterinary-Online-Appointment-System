@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from datetime import datetime
 
 class InsertPet(BaseModel):
-    client_id: int
     name: str
     breed: str
     species_type: str

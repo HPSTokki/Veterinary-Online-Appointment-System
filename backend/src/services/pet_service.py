@@ -28,7 +28,7 @@ class PetService():
             raise PetNotFound
         return cast(Pet, pet)
     
-    def create_pet(self, pet_data: InsertPet, user_id) -> ReadPet:
+    def create_pet(self, pet_data: InsertPet, user_id: int) -> ReadPet:
         client = self._get_client(user_id)
         pet = Pet(**pet_data.model_dump(), client_id=client.id)
         self.session.add(pet)

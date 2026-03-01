@@ -44,7 +44,12 @@ class PetService():
             )
         ).all()
         validated_pet = [ReadPet.model_validate(p, from_attributes=True) for p in pets]
-        return cast(ListReadPet, validated_pet)
+        return ListReadPet(pets=validated_pet)
+    
+    def get_pet(self, pet_id: int, user_id: int) -> ReadPet:
+        client = self._get_client(user_id)
+        pet = self._get_pet(pet_id, cast(int, client.id))
+        return ReadPet.model_validate(pet, from_attributes=True)
     
     def update_pet(self, pet_data: UpdatePet, user_id: int, pet_id: int) -> ReadPet:
         client = self._get_client(user_id)

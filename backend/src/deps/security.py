@@ -23,7 +23,7 @@ def verify_password(password: str, password_hash: str) -> bool:
 
 SECRET_KEY = "janedoe123"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRED_IN_MINUTES = 1
+ACCESS_TOKEN_EXPIRED_IN_MINUTES = 30
 
 def create_access_token(data: dict) -> str:
     payload = data.copy()

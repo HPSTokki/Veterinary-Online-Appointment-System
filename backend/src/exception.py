@@ -20,3 +20,24 @@ class DuplicateAccountCredentials(DomainException):
             status_code=status.HTTP_409_CONFLICT, 
             message="Account is already registered"
         )
+
+class DuplicateAccountProfile(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_409_CONFLICT, 
+            message="Profile associated with User Account already exists",
+        )
+
+class ClientProfileNotExist(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            message="Client Profile Not Found"
+        )
+        
+class PetNotFound(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            message="Pet Not Found", 
+        )

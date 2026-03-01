@@ -18,7 +18,6 @@ class ListReadUser(BaseModel):
     users: list[ReadUser]
     
 class InsertClient(BaseModel):
-    user_id: int | None = None
     full_name: str
     mobile_no: str | None = None
     tel_no: str | None = None
@@ -41,7 +40,7 @@ class ReadClient(BaseModel):
 class UpdateClient(BaseModel):
     mobile_no: str | None = None
     tel_no: str | None = None
-    preferred_contact_method: str = "Mobile No."
+    preferred_contact_method: str | None = None
     address: str | None = None
     is_new_client: bool | None = True 
 

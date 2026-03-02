@@ -6,6 +6,10 @@ src/__pycache__/
 
 alembic/versions
 
+# Test Cases
+
+backend/tests/
+
 # C extensions
 *.so
 

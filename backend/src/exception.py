@@ -41,3 +41,24 @@ class PetNotFound(DomainException):
             status_code=status.HTTP_404_NOT_FOUND, 
             message="Pet Not Found", 
         )
+        
+class AppointmentNotFound(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_404_NOT_FOUND, 
+            message="Appointment Not Found"
+        )
+
+class ClinicIsClosed(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            message="Clinic is closed", 
+        )
+
+class SlotUnavailable(DomainException):
+    def __init__(self) -> None:
+        super().__init__(
+            status_code=status.HTTP_403_FORBIDDEN,
+            message="Slot is Taken"
+        )

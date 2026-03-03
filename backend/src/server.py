@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from src.routes import appointment_route
 from src.exception import DomainException
 from src.routes import user_route, client_route, pet_route
 
@@ -19,6 +20,7 @@ async def handle_exception(req: Request, exc: DomainException):
 app.include_router(user_route.router)
 app.include_router(client_route.router)
 app.include_router(pet_route.router)
+app.include_router(appointment_route.router)
 
 @app.get("/")
 async def get_root():

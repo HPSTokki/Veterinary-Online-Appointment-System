@@ -68,6 +68,12 @@ class AppointmentService():
             for existing_start, existing_end in booked
         )
         
+    def _to_read(self, appointment: Appointment) -> ReadAppointment:
+        service = self.session.get(Service, appointment.service_id)
+        result = ReadAppointment.model_validate(appointment, from_attributes=True)
+        result.service_name = service.name if service else None
+        return result
+        
     # Public Methods
     
     def get_available_slots(self, service_id: int, date: datetime) -> list[dict]:
@@ -116,14 +122,15 @@ class AppointmentService():
         self.session.add(appointment)
         self.session.commit()
         self.session.refresh(appointment)
-        return ReadAppointment.model_validate(appointment, from_attributes=True)
+        return self._to_read(appointment) 
     
-    def get_appointments(self, user_id: int) -> list[ReadAppointment]:
+    def get_appointments(self, user_id: int) -> ListReadAppointment:
         client = self._get_client(user_id)
         appointments = self.session.exec(
             select(Appointment).where(col(Appointment.client_id) == client.id)
         ).all()
-        return [ReadAppointment.model_validate(a, from_attributes=True) for a in appointments]
+        validated_appointment = [self._to_read(a) for a in appointments]
+        return ListReadAppointment(appointments=validated_appointment)
     
     def get_appointment(self, appointment_id: int, user_id: int) -> ReadAppointment:
         client = self._get_client(user_id)
@@ -135,7 +142,7 @@ class AppointmentService():
         ).first()
         if not appointment:
             raise AppointmentNotFound()
-        return ReadAppointment.model_validate(cast(Appointment, appointment), from_attributes=True)
+        return self._to_read(appointment)
     
     def update_appointment(self, appointment_id: int, user_id: int, data: UpdateAppointment) -> ReadAppointment:
         client = self._get_client(user_id)
@@ -163,4 +170,4 @@ class AppointmentService():
             setattr(appointment, key, value)
         self.session.commit()
         self.session.refresh(appointment)
-        return ReadAppointment.model_validate(cast(Appointment, appointment), from_attributes=True)
+        return self._to_read(appointment)

@@ -3,7 +3,6 @@ from datetime import datetime
 
 class InsertAppointment(BaseModel):
     pet_id: int
-    client_id: int
     service_id: int
     appointment_date: datetime
     start_time: datetime
@@ -26,6 +25,8 @@ class ReadAppointment(BaseModel):
     booking_source: str
     status: str
     created_at: datetime
+    
+    service_name: str | None = None
     
 class UpdateAppointment(BaseModel):
     appointment_date: datetime | None = None

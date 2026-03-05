@@ -2,6 +2,9 @@
 	import './layout.css';
 	import NavBar from '$lib/components/NavBar.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import BookButton from '$lib/components/BookButton.svelte';
+
+	let showModal = () => true
 	let { children } = $props();
 </script>
 
@@ -17,4 +20,5 @@
 	<footer>
 		<Footer />
 	</footer>
+	<BookButton />
 </div>

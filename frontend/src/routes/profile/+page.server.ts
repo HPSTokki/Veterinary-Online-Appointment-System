@@ -1,0 +1,66 @@
+import { getClientProfile, createClientProfile, updateProfile } from "$lib/api/client";
+import { createPet, getPets, updatePet, type CreatePetData } from "$lib/api/pet";
+import type { CreateProfileData, UpdateProfileData } from "$lib/api/client";
+import { fail, redirect, type Actions } from "@sveltejs/kit";
+import type { PageServerLoad } from "../auth/$types";
+
+export const load: PageServerLoad = async ({ locals }) => {
+    if (!locals.user) redirect(303, '/')
+    const profile = await getClientProfile(locals.token!)
+
+    const pets = profile ? await getPets(locals.token!) : []
+
+    return { pets, profile }
+}
+
+export const actions: Actions = {
+    create_profile: async ({ request, locals }) => {
+        const form = await request.formData()
+        const body: CreateProfileData = {
+            full_name: form.get("full_name") as string,
+            address: form.get("address") as string,
+            mobile_no: form.get("mobile_no") as string | null || null,
+            tel_no: form.get("tel_no") as string | null || null,
+            preferred_contact_method: form.get("preferred_contact_method") as string
+        }
+        try {
+            await createClientProfile(locals.token!, body)
+        } catch(error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    },
+    update_profile: async ({ request, locals }) => {
+        const form = await request.formData()
+        const body: UpdateProfileData = {
+            address: form.get('address') as string | null ?? undefined,
+            mobile_no: form.get('mobile_no') as string | null | undefined,
+            tel_no: form.get('tel_no') as string | null | undefined,
+            preferred_contact_method: form.get('preferred_contact_method') as string | null ?? undefined
+        }
+        try {
+            await updateProfile(locals.token!, body) 
+        } catch (error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    },
+    add_pet: async ({ request, locals }) => {
+        const form = await request.formData()
+        const body: CreatePetData = {
+            name: form.get('name') as string,
+            breed: form.get('breed') as string,
+            species_type: form.get('species_type') as string,
+            sex: form.get('sex') as string,
+            date_of_birth: form.get('date_of_birth') as string,
+            is_spayed_neutered: form.get('is_spayed_neutered') === 'true',
+            weight_kg: form.get('weight_kg') ? parseFloat(form.get('weight_kg') as string) : null
+        }
+        try {
+            await createPet(locals.token!, body)
+        } catch (error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    }
+}

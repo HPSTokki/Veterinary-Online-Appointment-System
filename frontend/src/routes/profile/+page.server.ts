@@ -1,9 +1,9 @@
 import { getClientProfile, createClientProfile, updateProfile } from "$lib/api/client";
-import { createPet, getPets, updatePet, type CreatePetData } from "$lib/api/pet";
+import { createPet, deletePet, getPets, updatePet, type CreatePetData } from "$lib/api/pet";
 import type { CreateProfileData, UpdateProfileData } from "$lib/api/client";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "../auth/$types";
-import { getAppointments } from "$lib/api/appointment";
+import { cancelAppointment, getAppointments, updateAppointment } from "$lib/api/appointment";
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.user) redirect(303, '/')
@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ locals }) => {
             getAppointments(locals.token!)
         ])
         : [[], []]
-    
+
     console.log(appointments)
     return { pets, appointments, profile }
 }
@@ -32,7 +32,7 @@ export const actions: Actions = {
         }
         try {
             await createClientProfile(locals.token!, body)
-        } catch(error: any) {
+        } catch (error: any) {
             return fail(400, { message: error.message })
         }
         redirect(303, '/profile')
@@ -46,7 +46,7 @@ export const actions: Actions = {
             preferred_contact_method: form.get('preferred_contact_method') as string | null ?? undefined
         }
         try {
-            await updateProfile(locals.token!, body) 
+            await updateProfile(locals.token!, body)
         } catch (error: any) {
             return fail(400, { message: error.message })
         }
@@ -65,6 +65,64 @@ export const actions: Actions = {
         }
         try {
             await createPet(locals.token!, body)
+        } catch (error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    },
+    cancel_appointment: async ({ request, locals }) => {
+        const form = await request.formData()
+        const id = form.get('appointment_id') as string
+
+        try {
+            await cancelAppointment(locals.token!, parseInt(id))
+        } catch (error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    },
+    edit_appointment: async ({ request, locals }) => {
+        const form = await request.formData()
+        const id = parseInt(form.get('appointment_id') as string)
+
+        const body = {
+            appointment_date: form.get('appointment_date') as string || undefined,
+            start_time: form.get('start_time') as string || undefined,
+            end_time: form.get('end_time') as string || undefined,
+            visit_type_code: form.get('visit_type_code') as string || undefined,
+            chief_complaint: form.get('chief_complaint') as string || undefined,
+        }
+
+        try {
+            await updateAppointment(locals.token!, id, body)
+        } catch (error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    },
+    edit_pet: async ({ request, locals }) => {
+        const form = await request.formData()
+        const id = parseInt(form.get('pet_id') as string)
+
+        const body = {
+            is_spayed_neutered: form.get('is_spayed_neutered') === 'true',
+            weight_kg: form.get('weight_kg') ? parseFloat(form.get('weight_kg') as string) : null
+        }
+
+        try {
+            await updatePet(locals.token!, id, body)
+        } catch (error: any) {
+            return fail(400, { message: error.message })
+        }
+        redirect(303, '/profile')
+    },
+
+    delete_pet: async ({ request, locals }) => {
+        const form = await request.formData()
+        const id = parseInt(form.get('pet_id') as string)
+
+        try {
+            await deletePet(locals.token!, id)
         } catch (error: any) {
             return fail(400, { message: error.message })
         }

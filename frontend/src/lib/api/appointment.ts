@@ -44,3 +44,35 @@ export async function getAppointments(token: string) {
     const data = await response.json()
     return data.appointments
 }
+
+export async function cancelAppointment(token: string, id: number) {
+    const response = await fetch(`${BASE_URL}/appointment/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'cancelled' })
+    })
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail)
+    }
+    return response.json()
+}
+
+export async function updateAppointment(token: string, id: number, data: object) {
+    const response = await fetch(`${BASE_URL}/appointment/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(data)
+    })
+    if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail)
+    }
+    return response.json()
+}

@@ -26,3 +26,8 @@ def get_one_pet(session: SessionDep,pet_id: int, current_user: CurrentUser):
 def update_pet(session: SessionDep, update_data: UpdatePet, pet_id: int, current_user: CurrentUser):
     service = PetService(session)
     return service.update_pet(update_data, current_user.id, pet_id)
+
+@router.delete("/{pet_id}", status_code=204)
+def delete_pet(session: SessionDep, current_user: CurrentUser, pet_id: int):
+    service = PetService(session)
+    return service.delete_pet(pet_id, current_user.id)

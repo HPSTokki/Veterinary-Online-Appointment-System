@@ -50,3 +50,14 @@ export async function updatePet(token: string, petId: number, data: object) {
     }
     return response.json()
 }
+
+export async function deletePet(token: string, petId: number) {
+    const response = await fetch(`${BASE_URL}/pet/${petId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.detail)
+    }
+}

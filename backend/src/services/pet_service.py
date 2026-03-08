@@ -1,8 +1,8 @@
 from typing import cast
 from sqlmodel import Session, select, col
 
-from src.exception import PetNotFound, ClientProfileNotExist
-from src.models.appointment_models import Pet, Client
+from src.exception import PetHasActiveAppointments, PetNotFound, ClientProfileNotExist
+from src.models.appointment_models import Appointment, Pet, Client
 from src.dtos.pet_dtos import InsertPet, ListReadPet, UpdatePet, ReadPet
 
 class PetService():
@@ -60,3 +60,17 @@ class PetService():
         self.session.commit()
         self.session.refresh(pet)
         return ReadPet.model_validate(cast(Pet, pet), from_attributes=True)
+    
+    def delete_pet(self, pet_id: int, user_id: int) -> None:
+        client = self._get_client(user_id)
+        pet = self._get_pet(pet_id, cast(int, client.id))
+        active = self.session.exec(select(Appointment).where(
+            col(Appointment.pet_id) == pet.id,
+            col(Appointment.status).in_(['pending', 'confirmed'])
+        )).first()
+        
+        if active:
+            raise PetHasActiveAppointments()
+        
+        self.session.delete(cast(Pet, pet))
+        self.session.commit()

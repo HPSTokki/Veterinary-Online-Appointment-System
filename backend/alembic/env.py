@@ -8,9 +8,21 @@ from alembic import context
 from sqlmodel import SQLModel
 from src.models.appointment_models import *
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+supabase_url = os.getenv("SUPABASE_URL")
+
+if not supabase_url:
+    raise ValueError("Supabase url is not defined or found")
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+config.set_main_option('sqlalchemy.url', supabase_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

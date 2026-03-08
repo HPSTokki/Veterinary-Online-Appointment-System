@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from datetime import datetime
 
 class InsertAppointment(BaseModel):
@@ -36,6 +36,13 @@ class UpdateAppointment(BaseModel):
     visit_type_code: str | None = None
     chief_complaint: str | None = None
     status: str | None = None
+    
+    @field_validator('status')
+    @classmethod
+    def validate_status(cls, v: str | None) -> str | None:
+        if v is not None and v not in ['cancelled']:
+            raise ValueError('Customer can only cancel appointments')
+        return v
 
 class ListReadAppointment(BaseModel):
     appointments: list[ReadAppointment]

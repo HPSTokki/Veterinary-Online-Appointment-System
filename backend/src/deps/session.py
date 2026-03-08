@@ -6,7 +6,7 @@ from fastapi import Depends
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+# load_dotenv()
 
 BASE_PATH = Path(__file__).resolve().parent.parent
 LOCAL_DB_PATH = BASE_PATH / "local.db"
@@ -14,7 +14,10 @@ LOCAL_DB_PATH = BASE_PATH / "local.db"
 SQLITE_URL = "sqlite:///local.db"
 CONNECT_ARGS = { "check_same_thread": False }
 
-SUPABASE_URL_PROD: str = cast(str, os.environ.get("SUPABASE_URL"))
+SUPABASE_URL_PROD = os.environ.get("SUPABASE_URL")
+
+if not SUPABASE_URL_PROD:
+    raise ValueError("SUPABASE URL NOT FOUND")
 
 engine = create_engine(url=SUPABASE_URL_PROD, echo=True)
 

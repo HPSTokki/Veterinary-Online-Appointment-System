@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import cast
 from sqlmodel import Session, col, select
+from sqlalchemy import func 
 
 from src.exception import AppointmentNotFound, ClientProfileNotExist, ClinicIsClosed, PetNotFound, SlotUnavailable
 from src.models.appointment_models import Appointment, Client, Pet, Service
@@ -49,17 +50,18 @@ class AppointmentService():
     
     def _is_clinic_open(self, date: datetime) -> bool:
         return date.weekday() in OPEN_DAYS
-    
+
     def _get_booked_slots(self, staff_type: str, date: datetime) -> list[tuple[datetime, datetime]]:
         booked = self.session.exec(
             select(Appointment)
             .join(Service, col(Appointment.service_id) == col(Service.id))
             .where(
                 col(Service.staff_type) == staff_type,
-                col(Appointment.appointment_date) == date.date(),
+                func.date(Appointment.appointment_date) == date.date(),
                 col(Appointment.status) != "cancelled"
             )
         ).all()
+        
         return [(a.start_time, a.end_time) for a in booked]
     
     def _is_slot_taken(self, booked: list[tuple[datetime, datetime]], start: datetime, end: datetime) -> bool:

@@ -1,8 +1,10 @@
 from datetime import datetime
 from fastapi import APIRouter, Query
+from sqlmodel import select
+from src.models.appointment_models import Service
 from src.deps.session import SessionDep
 from src.deps.dependencies import CurrentUser
-from src.dtos.appointment_dtos import InsertAppointment, ListReadAppointment, ReadAppointment, UpdateAppointment
+from src.dtos.appointment_dtos import InsertAppointment, ListReadAppointment, ReadAppointment, ReadService, UpdateAppointment
 from src.services.appointment_service import AppointmentService
 
 router = APIRouter(prefix="/appointment", tags=["Appointments"])
@@ -12,6 +14,11 @@ def get_available_slots(service_id: int, session: SessionDep, current_user: Curr
     service = AppointmentService(session)
     return service.get_available_slots(service_id, date)
 
+@router.get("/services", response_model=list[ReadService])
+def get_services(session: SessionDep):
+    services = session.exec(select(Service)).all()
+    return services
+    
 @router.post("/", response_model=ReadAppointment, status_code=201)
 def create_appointment(body: InsertAppointment, session: SessionDep, current_user: CurrentUser):
     service = AppointmentService(session)

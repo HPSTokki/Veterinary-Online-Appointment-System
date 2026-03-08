@@ -27,6 +27,7 @@ class ReadAppointment(BaseModel):
     created_at: datetime
     
     service_name: str | None = None
+    pet_name: str | None = None
     
 class UpdateAppointment(BaseModel):
     appointment_date: datetime | None = None

@@ -72,7 +72,9 @@ class AppointmentService():
         
     def _to_read(self, appointment: Appointment) -> ReadAppointment:
         service = self.session.get(Service, appointment.service_id)
+        pet = self.session.get(Pet, appointment.pet_id)
         result = ReadAppointment.model_validate(appointment, from_attributes=True)
+        result.pet_name = pet.name if pet else None
         result.service_name = service.name if service else None
         return result
         

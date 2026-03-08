@@ -34,3 +34,13 @@ export async function createAppointment(token: string, data: object) {
     }
     return response.json()
 }
+
+export async function getAppointments(token: string) {
+    const response = await fetch(`${BASE_URL}/appointment/`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!response.ok) return []
+    const data = await response.json()
+    return data.appointments
+}

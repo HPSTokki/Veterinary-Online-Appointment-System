@@ -3,14 +3,21 @@ import { createPet, getPets, updatePet, type CreatePetData } from "$lib/api/pet"
 import type { CreateProfileData, UpdateProfileData } from "$lib/api/client";
 import { fail, redirect, type Actions } from "@sveltejs/kit";
 import type { PageServerLoad } from "../auth/$types";
+import { getAppointments } from "$lib/api/appointment";
 
 export const load: PageServerLoad = async ({ locals }) => {
     if (!locals.user) redirect(303, '/')
     const profile = await getClientProfile(locals.token!)
 
-    const pets = profile ? await getPets(locals.token!) : []
-
-    return { pets, profile }
+    const [pets, appointments] = profile
+        ? await Promise.all([
+            getPets(locals.token!),
+            getAppointments(locals.token!)
+        ])
+        : [[], []]
+    
+    console.log(appointments)
+    return { pets, appointments, profile }
 }
 
 export const actions: Actions = {

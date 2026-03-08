@@ -1,5 +1,6 @@
 <script lang="ts">
     import { enhance } from '$app/forms'
+	import AppointmentList from './components/AppointmentList.svelte';
     let { data, form } = $props()
     let editing = $state(false)
     let addingPet = $state(false)
@@ -226,6 +227,11 @@
             </div>
         {/if}
     </div>
-
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-2xl font-bold text-main!">My Appointments</h2>
+        </div>
+        <AppointmentList appointments={data.appointments} />
+    </div>
 </div>
 {/if}

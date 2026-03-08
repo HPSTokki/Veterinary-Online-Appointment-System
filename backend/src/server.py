@@ -12,6 +12,7 @@ ORIGINS = [
     "http://localhost",
     "http://localhost:8000",
     "http://localhost:5173",
+    "https://veterinary-online-appointment-syste.vercel.app"
 ]
 
 app.add_middleware(

@@ -4,7 +4,6 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import BookButton from '$lib/components/BookButton.svelte';
 
-	let showModal = () => true
 	let { children } = $props();
 </script>
 

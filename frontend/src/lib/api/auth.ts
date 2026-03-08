@@ -1,4 +1,5 @@
 export const BASE_URL = import.meta.env.API_URL ?? 'http://localhost:8000' 
+export const CHAIN_URL = `https://veterinary-online-appointment-syste.vercel.app/${BASE_URL}`
 
 interface RegisterData {
     email: string
@@ -11,7 +12,7 @@ interface LoginData {
 }
 
 export async function registerUser(form_data: RegisterData) {
-    const response = await fetch(`${BASE_URL}/user/auth/reg`, {
+    const response = await fetch(`${CHAIN_URL}/user/auth/reg`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -54,7 +55,7 @@ export async function loginUser(form_data: LoginData) {
 }
 
 export async function getMe(token: string) {
-    const response = await fetch(`${BASE_URL}/user/me`, {
+    const response = await fetch(`${CHAIN_URL}/user/me`, {
         headers: {
             'Authorization': `Bearer ${token}`
         }

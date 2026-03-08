@@ -28,6 +28,7 @@ export const actions: Actions = {
         const form = await request.formData()
         const email = form.get('email') as string
         const password = form.get('password') as string
+        console.log(email, password)
 
         try {
             await registerUser({ email, password })

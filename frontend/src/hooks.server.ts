@@ -1,12 +1,13 @@
 import type { Handle } from "@sveltejs/kit";
 
 const API_URL = process.env.API_URL ?? 'http://localhost:8000'
+const CHAIN_URL = `https://veterinary-online-appointment-syste.vercel.app/${API_URL}`
 
 export const handle: Handle = async ({ event, resolve }) => {
     const token = event.cookies.get('token')
     if (token) {
         try {
-            const response = await fetch(`${API_URL}/user/me`, {
+            const response = await fetch(`${CHAIN_URL}/user/me`, {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }

@@ -1,4 +1,6 @@
-export const BASE_URL = import.meta.env.API_URL ?? 'http://localhost:8000' 
+export const BASE_URL = typeof process !== 'undefined' 
+    ? (process.env.API_URL ?? process.env.VITE_API_URL ?? 'http://localhost:8000')
+    : (import.meta.env.VITE_API_URL ?? 'http://localhost:8000') 
 export const CHAIN_URL = `https://veterinary-online-appointment-syste.vercel.app/${BASE_URL}`
 
 interface RegisterData {

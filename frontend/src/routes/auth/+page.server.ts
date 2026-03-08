@@ -39,6 +39,7 @@ export const actions: Actions = {
                 maxAge: 60 * 30
             })
         } catch (error: any) {
+            console.log('error', error.message)
             return fail(400, { message: error.message })
         }
 

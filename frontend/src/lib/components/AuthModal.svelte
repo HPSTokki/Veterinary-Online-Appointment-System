@@ -34,108 +34,119 @@
 		target.classList.remove('border-[#2F5D4E]');
 	}
 
+	let loginError = $state<string | null>(null);
+
+	// SvelteKit action responses wrap data under result.data when fetched as JSON.
+	// Status 200 = success, status 4xx = fail() — result.data holds the payload.
+	function parseActionResult(result: any) {
+		// SvelteKit returns { type, status, data } shape
+		if (result?.type === 'failure') return { ok: false, data: result.data };
+		if (result?.type === 'success') return { ok: true, data: result.data };
+		// redirect comes through as ok response with no data
+		return { ok: true, data: result };
+	}
+
 	// Handle login form submission
 	async function handleLogin(event: Event) {
 		event.preventDefault();
+		loginError = null;
 		const form = event.target as HTMLFormElement;
 		const formData = new FormData(form);
 
 		const response = await fetch('/auth?/login', {
 			method: 'POST',
 			body: formData,
-			headers: {
-				Accept: 'application/json'
-			}
+			headers: { Accept: 'application/json' }
 		});
 
-		const result = await response.json();
+		const raw = await response.json();
+		const { ok, data } = parseActionResult(raw);
 
-		if (response.ok && result.redirected) {
-			open = false; // Close modal on success
-			goto('/profile'); // Or wherever you want to redirect
+		if (ok) {
+			open = false;
+			goto('/profile');
 		} else {
-			// Show error message (you can add an error state variable)
-			console.error('Login failed:', result.error);
+			loginError = data?.message || 'Login failed. Check your credentials.';
 		}
 	}
 
 	// Handle register form submission
 	async function handleRegister(event: Event) {
 		event.preventDefault();
+		forgotError = null;
+		forgotSuccess = null;
 		const form = event.target as HTMLFormElement;
 		const formData = new FormData(form);
 
 		const response = await fetch('/auth?/register', {
 			method: 'POST',
 			body: formData,
-			headers: {
-				Accept: 'application/json'
-			}
+			headers: { Accept: 'application/json' }
 		});
 
-		const result = await response.json();
+		const raw = await response.json();
+		const { ok, data } = parseActionResult(raw);
 
-		if (response.ok && result.success) {
-			mode = 'login'; // Switch to login mode after successful registration
-			forgotSuccess = 'Account created! Please login.';
+		if (ok) {
+			open = false;
+			goto('/profile');
 		} else {
-			forgotError = result.error || 'Registration failed';
+			forgotError = data?.message || 'Registration failed. Email may already be in use.';
 		}
 	}
 
 	// Handle forgot password form submission
 	async function handleForgotPassword(event: Event) {
 		event.preventDefault();
-		const form = event.target as HTMLFormElement;
-		const formData = new FormData(form);
-
 		forgotError = null;
 		forgotSuccess = null;
+		const form = event.target as HTMLFormElement;
+		const formData = new FormData(form);
 
 		const response = await fetch('/auth?/forgot_password', {
 			method: 'POST',
 			body: formData,
-			headers: {
-				Accept: 'application/json'
-			}
+			headers: { Accept: 'application/json' }
 		});
 
-		const result = await response.json();
+		const raw = await response.json();
+		const { ok, data } = parseActionResult(raw);
 
-		if (response.ok && result.success) {
-			forgotSuccess = result.message || 'PIN sent to your email!';
+		if (ok) {
+			// Backend always returns a message (even for unknown emails, for security)
+			forgotSuccess = data?.message || 'If that email exists, a PIN has been sent.';
 			setTimeout(() => {
-				mode = 'reset'; // Auto-switch to reset mode after success
+				mode = 'reset';
 			}, 2000);
 		} else {
-			forgotError = result.error || 'Failed to send PIN';
+			forgotError = data?.message || 'Failed to send PIN. Please try again.';
 		}
 	}
 
 	// Handle reset password form submission
 	async function handleResetPassword(event: Event) {
 		event.preventDefault();
+		forgotError = null;
 		const form = event.target as HTMLFormElement;
 		const formData = new FormData(form);
-
-		forgotError = null;
 
 		const response = await fetch('/auth?/reset_password', {
 			method: 'POST',
 			body: formData,
-			headers: {
-				Accept: 'application/json'
-			}
+			headers: { Accept: 'application/json' }
 		});
 
-		const result = await response.json();
+		const raw = await response.json();
+		const { ok, data } = parseActionResult(raw);
 
-		if (response.ok && result.success) {
-			mode = 'login';
+		if (ok) {
 			forgotSuccess = 'Password reset successfully! Please login.';
 			resetState();
+			setTimeout(() => {
+				mode = 'login';
+			}, 1500);
 		} else {
-			forgotError = result.error || 'Failed to reset password';
+			forgotError = data?.message || 'Invalid or expired PIN. Please try again.';
 		}
 	}
 </script>
@@ -178,6 +189,12 @@
 				<!-- ===== LOGIN ===== -->
 				{#if mode === 'login'}
 					<form onsubmit={handleLogin} class="flex flex-col gap-4">
+						{#if loginError}
+							<div class="rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-600">
+								{loginError}
+							</div>
+						{/if}
+
 						<div class="flex flex-col gap-1">
 							<label class="text-sm font-medium text-gray-900">Email</label>
 							<input

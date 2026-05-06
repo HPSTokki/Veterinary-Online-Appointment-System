@@ -54,3 +54,4 @@ class ReadService(BaseModel):
     name: str
     duration_mins: int
     staff_type: str
+    price: float

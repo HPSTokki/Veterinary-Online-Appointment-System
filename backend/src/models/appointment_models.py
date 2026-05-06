@@ -3,7 +3,7 @@ from sqlalchemy import String
 from datetime import datetime
 
 class UserAccount(SQLModel, table=True):
-    __tablename__: str = "users"
+    __tablename__: str = "users" # type: ignore
     
     id: int = Field(default=None, primary_key=True)
     email: str = Field(sa_type=String, max_length=255, unique=True, index=True)
@@ -14,7 +14,7 @@ class UserAccount(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.now)
     
 class Client(SQLModel, table=True):
-    __tablename__: str = "clients"
+    __tablename__: str = "clients" # type: ignore
     
     id: int = Field(default=None, primary_key=True)
     user_id: int | None = Field(default=None, foreign_key="users.id")
@@ -28,7 +28,7 @@ class Client(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.now)
     
 class Pet(SQLModel, table=True):
-    __tablename__: str = "pets"
+    __tablename__: str = "pets" # type: ignore
 
     id: int = Field(default=None, primary_key=True)
     client_id: int = Field(default=None, foreign_key="clients.id")
@@ -43,15 +43,16 @@ class Pet(SQLModel, table=True):
     updated_at: datetime = Field(default_factory=datetime.now)
 
 class Service(SQLModel, table=True):
-    __tablename__: str = "services"
+    __tablename__: str = "services" # type: ignore
     
     id: int = Field(default=None, primary_key=True)
     name: str = Field(sa_type=String, unique=True, index=True)
     duration_mins: int
-    staff_type: str = Field(sa_type=String) 
+    staff_type: str = Field(sa_type=String)
+    price: float = Field(default=0)
 
 class Appointment(SQLModel, table=True):
-    __tablename__: str = "appointments"
+    __tablename__: str = "appointments" # type: ignore
     
     id: int = Field(default=None, primary_key=True)
     pet_id: int = Field(default=None, foreign_key="pets.id")
@@ -66,3 +67,13 @@ class Appointment(SQLModel, table=True):
     status: str = Field(sa_type=String)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
+
+class PasswordResetPin(SQLModel, table=True):
+    __tablename__: str = "password_reset_pins" # type: ignore
+
+    id: int = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
+    pin: str = Field(sa_type=String)
+    expires_at: datetime
+    used: bool = Field(default=False)
+    created_at: datetime = Field(default_factory=datetime.now)

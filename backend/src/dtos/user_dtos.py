@@ -46,3 +46,15 @@ class UpdateClient(BaseModel):
 
 class ListResponseClient(BaseModel):
     clients: list[ReadClient]
+
+class UpdatePassword(BaseModel):
+    current_password: str
+    new_password: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    pin: str
+    new_password: str

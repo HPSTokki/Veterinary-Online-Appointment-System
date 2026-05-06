@@ -6,7 +6,7 @@ from fastapi import Depends
 from dotenv import load_dotenv
 import os
 
-# load_dotenv()
+load_dotenv()
 
 BASE_PATH = Path(__file__).resolve().parent.parent
 LOCAL_DB_PATH = BASE_PATH / "local.db"
@@ -19,8 +19,8 @@ SUPABASE_URL_PROD = os.environ.get("SUPABASE_URL")
 if not SUPABASE_URL_PROD:
     raise ValueError("SUPABASE URL NOT FOUND")
 
-engine = create_engine(url=SUPABASE_URL_PROD, echo=True)
-
+# engine = create_engine(url=SUPABASE_URL_PROD, echo=True, pool_size=5, max_overflow=10, pool_timeout=30, pool_recycle=1800, connect_args={ "connect_timeout": 10 })
+engine = create_engine(url=SQLITE_URL, connect_args={ "check_same_thread": False })
 def get_session() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session

@@ -46,4 +46,3 @@
 		© {new Date().getFullYear()} Dr. Rosario Veterinary Clinic. All rights reserved.
 	</div>
 </footer>
->

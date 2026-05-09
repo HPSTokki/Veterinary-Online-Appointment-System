@@ -477,7 +477,7 @@
 					<Plus size={14} /> Book
 				</a>
 			</div>
-			<AppointmentList appointments={data.appointments} />
+			<AppointmentList appointments={data.appointments} token={data.token ?? ''} />
 		</section>
 	</div>
 {/if}

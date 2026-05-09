@@ -47,7 +47,15 @@
 		return new Date(dt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 	}
 	function toDatetimeLocal(dt: string) {
-		return new Date(dt).toISOString().slice(0, 16);
+		const d = new Date(dt);
+		const p = (n: number) => String(n).padStart(2, '0');
+		return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+	}
+
+	function toDateLocal(dt: string) {
+		const d = new Date(dt);
+		const p = (n: number) => String(n).padStart(2, '0');
+		return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 	}
 
 	const inp =
@@ -112,7 +120,7 @@
 							type="date"
 							name="appointment_date"
 							class={inp}
-							value={editingAppointment.appointment_date.split('T')[0]}
+							value={toDateLocal(editingAppointment.appointment_date)}
 						/>
 					</label>
 

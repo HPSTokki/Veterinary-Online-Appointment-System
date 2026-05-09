@@ -1,9 +1,7 @@
-from fastapi_mail import MessageType, MessageSchema, FastMail, ConnectionConfig
-from pydantic import SecretStr, NameEmail
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 import os
 from dotenv import load_dotenv
-
-load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -14,25 +12,10 @@ def get_env(name: str) -> str:
         raise ValueError(f"Missing environment variable: {name}")
     return value
 
-conf = ConnectionConfig(
-    MAIL_USERNAME=get_env("MAIL_USERNAME"),
-    MAIL_PASSWORD=SecretStr(get_env("MAIL_PASSWORD")),
-    MAIL_FROM=get_env("MAIL_FROM"),
-    MAIL_PORT=int(os.environ.get("MAIL_PORT", 587)),
-    MAIL_SERVER=get_env("MAIL_SERVER"),
-    MAIL_FROM_NAME="Dr. Rosario Veterinary Clinic",
-    MAIL_STARTTLS=True,
-    MAIL_SSL_TLS=False,
-    USE_CREDENTIALS=True
-)
-
-fastmail = FastMail(conf)
-
 async def send_password_reset_email(
     to_email: str,
     pin: str
 ) -> None:
-    subject = "Password Reset PIN — Dr. Rosario Vet Clinic"
     body = f"""
     <h2>Password Reset Request</h2>
     <p>You requested to reset your password.</p>
@@ -43,14 +26,15 @@ async def send_password_reset_email(
     <p>— Dr. Rosario Veterinary Clinic</p>
     """
 
-    message = MessageSchema(
-        subject=subject,
-        recipients=[NameEmail(name="", email=to_email)],
-        body=body,
-        subtype=MessageType.html
+    message = Mail(
+        from_email=(get_env("MAIL_FROM"), "Dr. Rosario Veterinary Clinic"),
+        to_emails=to_email,
+        subject="Password Reset PIN — Dr. Rosario Vet Clinic",
+        html_content=body
     )
 
     try:
-        await fastmail.send_message(message)
+        sg = SendGridAPIClient(get_env("SENDGRID_API_KEY"))
+        sg.send(message)
     except Exception as e:
         print(f"Reset email failed: {e}")

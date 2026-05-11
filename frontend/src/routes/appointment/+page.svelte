@@ -2,7 +2,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { getAvailableSlots } from '$lib/api/appointment';
-    import { goto, invalidateAll } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 
 	interface AppointmentData {
 		success?: boolean;
@@ -50,18 +50,17 @@
 		});
 	}
 
-    async function resetBooking() {
-        confirmed = false
-        selectedPet = null
-        selectedService = null
-        selectedDate = null
-        selectedSlot = null
-        slots = []
-        await invalidateAll()
-    }
+	async function resetBooking() {
+		confirmed = false;
+		selectedPet = null;
+		selectedService = null;
+		selectedDate = null;
+		selectedSlot = null;
+		slots = [];
+		await invalidateAll();
+	}
 
 	const tomorrow = new Date();
-	tomorrow.setDate(tomorrow.getDate() + 1);
 	const minDate = tomorrow.toISOString().split('T')[0];
 </script>
 
@@ -103,7 +102,10 @@
 		</a>
 		<button
 			class="btn w-full border-main! text-main! btn-outline hover:bg-main! hover:text-text-main!"
-			onclick={async () => {await resetBooking(); await goto('/appointment')}}
+			onclick={async () => {
+				await resetBooking();
+				await goto('/appointment');
+			}}
 		>
 			Book Another Appointment
 		</button>
@@ -210,7 +212,7 @@
 							type="date"
 							name="appointment_date"
 							min={minDate}
-							class="input-bordered bg-slate-100 input w-full border-main! focus:outline-main!"
+							class="input-bordered input w-full border-main! bg-slate-100 focus:outline-main!"
 							onchange={async (e) => {
 								selectedDate = (e.target as HTMLInputElement).value;
 								await fetchSlots();
@@ -276,7 +278,7 @@
 							</div>
 							<select
 								name="visit_type_code"
-								class="select-bordered bg-slate-100 select w-full border-main! focus:outline-main!"
+								class="select-bordered select w-full border-main! bg-slate-100 focus:outline-main!"
 								required
 							>
 								<option value="" disabled selected>Select visit type</option>
@@ -292,7 +294,7 @@
 							</div>
 							<textarea
 								name="chief_complaint"
-								class="textarea-bordered bg-slate-100 textarea w-full border-main! focus:outline-main!"
+								class="textarea-bordered textarea w-full border-main! bg-slate-100 focus:outline-main!"
 								placeholder="Describe your pet's concern..."
 								rows="3"
 								required

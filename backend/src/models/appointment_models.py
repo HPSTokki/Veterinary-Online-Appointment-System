@@ -26,6 +26,8 @@ class Client(SQLModel, table=True):
     is_new_client: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
+
+    email: str | None = Field(default=None, sa_type=String, index=True)
     
 class Pet(SQLModel, table=True):
     __tablename__: str = "pets" # type: ignore
@@ -39,6 +41,14 @@ class Pet(SQLModel, table=True):
     weight_kg: float | None = None
     date_of_birth: datetime
     sex: str = Field(sa_type=String)
+    
+    # Extras
+    
+    photo_url: str | None = Field(default=None, sa_type=String)
+    coat_color: str | None = Field(default=None, sa_type=String)
+    distinguishing_marks: str | None = Field(default=None, sa_type=String)
+    is_archive: bool = Field(default=False)
+    
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: datetime = Field(default_factory=datetime.now)
 

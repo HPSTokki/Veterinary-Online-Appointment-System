@@ -40,20 +40,20 @@
 
 	const members = [
 		{ id: 'dr-al', name: 'Dr. Al Rosario', desc: 'Owner and Chief Veterinarian' },
-		{ id: 'merla', name: 'Merla Tolentino', desc: 'Co-Owner and Wife of Dr. Al Rosario' },
-		{ id: 'lala', name: 'Mrs. Lala Tolentino', desc: 'Clinic Manager' },
-		{
-			id: 'clinical',
-			name: 'Clinical Team',
-			desc: 'Veterinarian, Vet Assistants, and Surgical Support'
-		},
-		{
-			id: 'grooming',
-			name: 'Grooming and Boarding',
-			desc: 'Groomers, Kennel Attendants, Care Staff'
-		},
-		{ id: 'admin', name: 'Admin & Support', desc: 'Front Desk, Billing, Supply Coordination' }
+		{ id: 'merla', name: 'Merla Tolentino', desc: 'Co-Owner and Wife of Dr. Al Rosario' }
 	];
+
+	let name = $state('');
+	let phone = $state('');
+	let email = $state('');
+	let service = $state('');
+	let message = $state('');
+
+	function submitMailto() {
+		const subject = `Service Inquiry: ${service || 'General'}`;
+		const body = `Name: ${name}\nContact No.: ${phone}\nEmail: ${email}\nService: ${service}\n\nMessage:\n${message}`;
+		window.location.href = `mailto:drrosarioveterinaryclinic@email.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+	}
 </script>
 
 <!-- Hero Section -->
@@ -193,6 +193,7 @@
 						type="text"
 						placeholder="Your full name"
 						class="input-bordered input input-sm w-full bg-text-main text-slate-800 sm:input-md"
+						bind:value={name}
 					/>
 				</label>
 
@@ -204,6 +205,7 @@
 						type="tel"
 						placeholder="e.g. 09XX XXX XXXX"
 						class="input-bordered input input-sm w-full bg-text-main text-slate-800 sm:input-md"
+						bind:value={phone}
 					/>
 				</label>
 
@@ -215,6 +217,7 @@
 						type="email"
 						placeholder="you@example.com"
 						class="input-bordered input input-sm w-full bg-text-main text-slate-800 sm:input-md"
+						bind:value={email}
 					/>
 				</label>
 
@@ -224,8 +227,9 @@
 					</div>
 					<select
 						class="select-bordered select w-full bg-text-main select-sm text-slate-800 sm:select-md"
+						bind:value={service}
 					>
-						<option disabled selected>Select a service</option>
+						<option disabled value="">Select a service</option>
 						<option>Medical & Surgical Care</option>
 						<option>Pet Grooming & Aesthetic Services</option>
 						<option>Boarding and Temporary Care</option>
@@ -241,11 +245,13 @@
 						class="textarea-bordered textarea w-full bg-text-main textarea-sm text-slate-800 sm:textarea-md"
 						placeholder="Write your message here..."
 						rows="4"
+						bind:value={message}
 					></textarea>
 				</label>
 
 				<div class="mt-1 card-actions justify-end">
 					<button
+						onclick={submitMailto}
 						class="btn w-full border-transparent bg-slate-500 btn-sm btn-primary sm:w-auto sm:btn-md"
 						>Submit</button
 					>

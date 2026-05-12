@@ -19,7 +19,8 @@
 				</span>
 				<span class="flex items-center gap-1.5">
 					<Clock size={13} />
-					Mon–Sat, 10:00 AM – 6:00 PM
+					Mon–Sat, 10:00 AM – 6:00 PM <br>
+					Sun, 12:00 PM - 5:00 PM
 				</span>
 			</div>
 		</aside>
@@ -33,13 +34,6 @@
 			<a href="/book" class="link text-sm link-hover">Book Now</a>
 		</nav>
 
-		<!-- Legal -->
-		<nav>
-			<h6 class="footer-title text-text-main/60">Legal</h6>
-			<a href="/terms-and-condition" class="link text-sm link-hover">Terms of Use</a>
-			<a href="/privacy-and-policy" class="link text-sm link-hover">Privacy Policy</a>
-			<a href="/cookies" class="link text-sm link-hover">Cookie Policy</a>
-		</nav>
 	</div>
 
 	<div class="border-t border-white/10 px-8 py-3 text-center text-xs opacity-50">

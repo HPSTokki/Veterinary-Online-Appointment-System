@@ -40,7 +40,7 @@ class UpdateAppointment(BaseModel):
     @field_validator('status')
     @classmethod
     def validate_status(cls, v: str | None) -> str | None:
-        if v is not None and v not in ['cancelled']:
+        if v is not None and v not in ['cancelled', 'pending']:
             raise ValueError('Customer can only cancel appointments')
         return v
 

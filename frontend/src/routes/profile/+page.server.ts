@@ -87,7 +87,8 @@ export const actions: Actions = {
 			start_time: (form.get('start_time') as string) || undefined,
 			end_time: (form.get('end_time') as string) || undefined,
 			visit_type_code: (form.get('visit_type_code') as string) || undefined,
-			chief_complaint: (form.get('chief_complaint') as string) || undefined
+			chief_complaint: (form.get('chief_complaint') as string) || undefined,
+			status: 'pending'
 		};
 
 		try {
